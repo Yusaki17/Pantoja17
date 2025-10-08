@@ -46,27 +46,30 @@ public class NotasServiceImpl implements NotasService {
         if (aLong == null || notasDTO == null) {
             throw new IllegalArgumentException("El ID y las notas no pueden ser nulos");
         }
+
         Notas existente = notasRepository.findById(aLong)
                 .orElseThrow(() -> new ResourceNotFoundException("notas no encontrado con ID: " + aLong));
 
-
         try {
-            if(notasDTO.getEstudianteId()!=null){
+
+            existente.setNota(notasDTO.getNota());
+
+            if(notasDTO.getEstudianteId() != null){
                 Estudiantes estudiantes = estudiantesRepository.findById(notasDTO.getEstudianteId())
-                        .orElseThrow(()-> new ResourceNotFoundException("estudiantes no encontrado con ID "+aLong));
+                        .orElseThrow(() -> new ResourceNotFoundException("estudiantes no encontrado con ID " + notasDTO.getEstudianteId()));
                 existente.setEstudianteId(estudiantes);
             }
-            if(notasDTO.getMateriaId()!=null){
-                Materias materias = materiasRepository.findById(notasDTO.getMateriaId())
-                        .orElseThrow(()-> new ResourceNotFoundException("materias no encontrado con ID "+aLong));
-                existente.setMateriaId(materias);
 
+            if(notasDTO.getMateriaId() != null){
+                Materias materias = materiasRepository.findById(notasDTO.getMateriaId())
+                        .orElseThrow(() -> new ResourceNotFoundException("materias no encontrado con ID " + notasDTO.getMateriaId()));
+                existente.setMateriaId(materias);
             }
 
             Notas actualizado = notasRepository.save(existente);
             return notasMapper.toDTO(actualizado);
 
-        }catch (Exception e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
